@@ -1,6 +1,6 @@
 import { AppSidebar } from "@/components/custom/appsidebar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { Field, FieldDescription, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -10,8 +10,10 @@ import { Separator } from "@/components/ui/separator";
 import {  SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import createWorkspace from "@/services/user";
+import timeAgo from "@/utils/timeago";
 import {  FileInputIcon,  FileTextIcon, PlusIcon } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
 const AppPage = ({ user, setuser }) => {
@@ -19,7 +21,6 @@ const AppPage = ({ user, setuser }) => {
 
   return (
     <SidebarProvider>
-      <Toaster />
       <AppSidebar user={user} setuser={setuser}/>
       <main className="w-full">
         <SidebarTrigger />
@@ -78,6 +79,7 @@ const Noworkspace = ({ token, setuser ,user}) => {
   )
 }
 const HaveWorkspace = ({ workspace, token, user, setuser }) => {
+  const usenavigate = useNavigate()
   const [workspaceName, setworkspaceName] = useState(null)
   async function handleCreateWorkspace() {
     if (!workspaceName) {
@@ -90,6 +92,10 @@ const HaveWorkspace = ({ workspace, token, user, setuser }) => {
       setworkspaceName('')
       toast.success(data.message, { position: 'top-right' })
     } catch (error) {
+      if(error.response.status===401){
+        localStorage.removeItem('token')
+        setuser(null)
+      }
       const message = error.response.data.message
       toast.error(message, { position: 'top-right' })
     }
@@ -121,16 +127,17 @@ const HaveWorkspace = ({ workspace, token, user, setuser }) => {
       <Separator />
       <ScrollArea className=" w-full whitespace-nowrap">
         <div className="flex gap-5 p-5 ">
-          {workspace.map((elem, index) => { return <WorkspaceCard key={index} name={elem.workspaceName} /> })}
+          {workspace.map((workspace, index) => { return <WorkspaceCard key={index} name={workspace.workspaceName} createdat={workspace.createdAt} workspaceId={workspace._id} /> })}
         </div>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
     </div>
   )
 }
-const WorkspaceCard = ({ name }) => {
+const WorkspaceCard = ({ name ,createdat,workspaceId}) => {
+  const usenavigate = useNavigate()
   return (
-    <Card className='w-90 cursor-pointer transition-all hover:scale-105 transform-gpu'>
+    <Card className='w-90 cursor-pointer transition-all hover:scale-105 transform-gpu' onClick={()=>{usenavigate(`/app/workspace/${workspaceId}`)}}>
       <CardHeader>
         <FileTextIcon />
         <CardTitle className='text-[20px]'>{name}</CardTitle>
@@ -138,7 +145,7 @@ const WorkspaceCard = ({ name }) => {
       <CardContent>
       </CardContent>
       <CardFooter className=''>
-        <p>created on </p>
+        <CardDescription>created {timeAgo(createdat)} </CardDescription>
       </CardFooter>
     </Card>
   )

@@ -4,34 +4,60 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarHeader,
+  SidebarMenuButton,
+  SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { Item, ItemContent, ItemTitle } from "../ui/item"
-import { HdIcon, HomeIcon, UserIcon, WorkflowIcon } from "lucide-react"
+import { ChevronDown, HdIcon, HomeIcon, SearchIcon, UserIcon, WorkflowIcon } from "lucide-react"
 import { Separator } from "../ui/separator"
-
-export function AppSidebar() {
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
+export function AppSidebar({user,setuser}) {
   return (
     <Sidebar>
       <SidebarHeader>
         <Item variant="" size="xs">
           <ItemContent>
-            <ItemTitle> <UserIcon />Satya's Workspace</ItemTitle>
+            <ItemTitle> <UserIcon />{user.username}'s Workspace</ItemTitle>
           </ItemContent>
         </Item>
       </SidebarHeader>
       <Separator />
       <SidebarContent>
         <SidebarGroup>
-          <Item size="sm" className='hover:bg-white cursor-pointer'>
-            <ItemContent>
-              <ItemTitle><HomeIcon /> Home</ItemTitle>
-            </ItemContent>
-          </Item>
-          <Item size="sm">
-            <ItemContent>
-              <ItemTitle><WorkflowIcon/>Workspace</ItemTitle>
-            </ItemContent>
-          </Item>
+          <SidebarMenuItem>
+            <SidebarMenuButton>
+              <HomeIcon/>
+              Home
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton>
+              <SearchIcon/>
+              Search
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton>
+              <UserIcon />
+              Invites
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton>
+                  <WorkflowIcon/>
+                  Workspaces
+                  <ChevronDown className="ml-auto"/>
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-[--radix-popper-anchor-width]">
+                  {user.workspace.map((workspace) => (
+                    <DropdownMenuItem key={workspace._id} className="p-2 hover:bg-gray-200 cursor-pointer">{workspace.workspaceName}</DropdownMenuItem>
+                  ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
         </SidebarGroup>
         <SidebarGroup />
         <SidebarGroup />

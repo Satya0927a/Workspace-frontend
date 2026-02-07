@@ -8,7 +8,6 @@ import { Popover, PopoverContent, PopoverDescription, PopoverTitle, PopoverTrigg
 import { ScrollBar, ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import {  SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { Toaster } from "@/components/ui/sonner";
 import {createWorkspace} from "@/services/user";
 import timeAgo from "@/utils/timeago";
 import {  FileInputIcon,  FileTextIcon, PlusIcon } from "lucide-react";
@@ -36,7 +35,7 @@ const Noworkspace = ({ token, setuser ,user}) => {
   const [workspaceName, setworkspaceName] = useState(null)
   async function handleCreateWorkspace() {
     if (!workspaceName) {
-
+      toast.error("Invalid Input",{position:'top-right'})
     }
     try {
       const data = await createWorkspace(workspaceName, token)
@@ -79,11 +78,10 @@ const Noworkspace = ({ token, setuser ,user}) => {
   )
 }
 const HaveWorkspace = ({ workspace, token, user, setuser }) => {
-  const usenavigate = useNavigate()
   const [workspaceName, setworkspaceName] = useState(null)
   async function handleCreateWorkspace() {
     if (!workspaceName) {
-
+      toast.error('Invalid inputs.',{position:'top-right'})
     }
     try {
       const data = await createWorkspace(workspaceName, token)

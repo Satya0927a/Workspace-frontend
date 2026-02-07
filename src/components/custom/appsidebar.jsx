@@ -6,6 +6,7 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
+  SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
@@ -14,11 +15,14 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { Item, ItemContent, ItemTitle } from "../ui/item"
-import { ChevronDown, HdIcon, HomeIcon, SearchIcon, User, UserIcon, WorkflowIcon } from "lucide-react"
+import { ChevronDown, DeleteIcon, EllipsisVertical, HdIcon, HomeIcon, SearchIcon, TrashIcon, User, UserIcon, WorkflowIcon } from "lucide-react"
 import { Separator } from "../ui/separator"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible"
+import { Avatar, AvatarBadge, AvatarFallback } from "../ui/avatar"
+import { useLocation } from "react-router"
 export function AppSidebar({ user, setuser }) {
+  const path = useLocation().pathname
   return (
     <Sidebar>
       <SidebarHeader>
@@ -31,26 +35,34 @@ export function AppSidebar({ user, setuser }) {
       <Separator />
       <SidebarContent>
         <SidebarGroup>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <a href="/app"><HomeIcon/>Home</a>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton>
-              <SearchIcon />
-              Search
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton>
-              <UserIcon />
-              Invites
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild className={`${path == '/app' ? "bg-white border shadow-2xl" : ""}`}>
+                <a href="/app"><HomeIcon />Home</a>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+          <SidebarMenu>
+
+            <SidebarMenuItem>
+              <SidebarMenuButton>
+                <SearchIcon />
+                Search
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+          <SidebarMenu>
+
+            <SidebarMenuItem>
+              <SidebarMenuButton>
+                <UserIcon />
+                Invites
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
         </SidebarGroup>
         <SidebarGroup>
-          <Collapsible>
+          <Collapsible defaultOpen>
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
                 <SidebarMenuButton>
@@ -60,20 +72,45 @@ export function AppSidebar({ user, setuser }) {
                 </SidebarMenuButton>
               </CollapsibleTrigger>
               <CollapsibleContent className="w-[--radix-popper-anchor-width]">
-              <SidebarMenuSub>
-                <SidebarMenuSubItem>
-                {user.workspace.map((workspace) => (
-                  <SidebarMenuSubButton key={workspace._id} asChild className="p-2 hover:bg-gray-200 cursor-pointer">
-                    <a href={`/app/workspace/${workspace._id}`}>{workspace.workspaceName}</a>
-                  </SidebarMenuSubButton>
-                ))}
-                </SidebarMenuSubItem>
+                <SidebarMenuSub>
+                  <SidebarMenuSubItem>
+                    {user.workspace.map((workspace) => (
+                      <SidebarMenuSubButton key={workspace._id} asChild className={`p-2 hover:bg-gray-200 cursor-pointer ${path == `/app/workspace/${workspace._id}` ? "bg-white border" : ""}`}>
+                        <a href={`/app/workspace/${workspace._id}`}>{workspace.workspaceName}</a>
+                      </SidebarMenuSubButton>
+                    ))}
+                  </SidebarMenuSubItem>
                 </SidebarMenuSub>
               </CollapsibleContent>
             </SidebarMenuItem>
           </Collapsible>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+          <DropdownMenu>
+            <DropdownMenuTrigger className=' w-full'>
+              <SidebarMenuButton className=' '>
+
+                <Avatar>
+                  <AvatarFallback>
+                    {user.username[0]}
+                  </AvatarFallback>
+                </Avatar>
+                <AvatarBadge className='bg-green-600' />
+                {user.username}
+                <EllipsisVertical className="ml-auto" />
+              </SidebarMenuButton>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-[]"t>
+              <DropdownMenuGroup>
+                <DropdownMenuItem variant="destructive">
+                  <TrashIcon />
+                  Delete Account
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+      </SidebarFooter>
     </Sidebar>
   )
 }

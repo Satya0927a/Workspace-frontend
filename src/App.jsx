@@ -7,6 +7,7 @@ import { Toaster } from "./components/ui/sonner"
 import WorkspacePage from "./pages/workspacepage"
 function App() {
   const [user,setuser] = useState(null)
+
   return (
     <BrowserRouter>
     <Toaster/>

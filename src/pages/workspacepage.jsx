@@ -2,9 +2,9 @@ import { AppSidebar } from "@/components/custom/appsidebar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { createProject, fetchWorkspace } from "@/services/user";
-import { EditIcon, FilesIcon, FileTextIcon, PlusIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { AddTask, createProject, fetchWorkspace } from "@/services/user";
+import { CrosshairIcon, CrossIcon, EditIcon, FilesIcon, FileTextIcon, PlusIcon } from "lucide-react";
+import { use, useEffect, useState } from "react";
 import { useParams } from "react-router";
 import TaskTable from "./data-table";
 import { Column } from "./columns";
@@ -20,6 +20,8 @@ import { Badge } from "@/components/ui/badge";
 const WorkspacePage = ({ user, setuser }) => {
   const workspaceId = useParams().workspaceId
   const [workspace, setworkspace] = useState(null)
+  console.log(workspace);
+
   useEffect(() => {
     async function fetchdata() {
       try {
@@ -54,10 +56,10 @@ const AfterFetch = ({ workspace, setworkspace }) => {
           <Button variant="outline"><EditIcon className="scale-150" /></Button>
         </div>
         <div className=" absolute right-20" >
-        {workspace.projects.length != 0 ? <CreateProjectBtn workspace={workspace} setworkspace={setworkspace} /> : null}
+          {workspace.projects.length != 0 ? <CreateProjectBtn workspace={workspace} setworkspace={setworkspace} /> : null}
         </div>
       </div>
-      {workspace.projects.length != 0 ? <NotEmptyProject projects={workspace.projects} /> : <EmptyProject workspace={workspace} setworkspace={setworkspace} />}
+      {workspace.projects.length != 0 ? <NotEmptyProject workspace={workspace} setworkspace={setworkspace} projects={workspace.projects} /> : <EmptyProject workspace={workspace} setworkspace={setworkspace} />}
     </section>
   )
 }
@@ -79,39 +81,82 @@ const EmptyProject = ({ workspace, setworkspace }) => {
     </>
   )
 }
-const NotEmptyProject = ({ projects }) => {
+const NotEmptyProject = ({ workspace, setworkspace, projects }) => {
   return (
     <>
 
       <div className="w-full flex flex-col items-center mt-10 gap-20">
         {projects.map((project) => {
           return (
-            <Project key={project.id} project={project} />
+            <Project key={project.id} workspace={workspace} setworkspace={setworkspace} project={project} />
           )
         })}
       </div>
     </>
   )
 }
-const Project = ({ project }) => {
+const Project = ({ workspace, setworkspace, project }) => {
+  const [openaddtaskfield, setopenaddtaskfield] = useState(false)
   return (
     <div className=" w-[90%] flex flex-col gap-5">
       <div>
-        <h1 className="scroll-m-20  text-[26px] font-semibold tracking-tight text-balanced">{project.project} <PriorityBade priority={project.priority} /></h1>
+        <div className="flex items-center gap-2">
+          <h1 className="scroll-m-20  text-[26px] font-semibold tracking-tight text-balanced">{project.project} </h1>
+          <PriorityBadge priority={project.priority} />
+        </div>
         <p>{project.description}</p>
       </div>
+      {!openaddtaskfield ? <Button onClick={() => { setopenaddtaskfield(true) }} variant="outline" className='w-fit'> <PlusIcon />Add tasks</Button> : <AddTaskField workspace={workspace} setworkspace={setworkspace} project={project} setopenaddtaskfield={setopenaddtaskfield} />}
       <TaskTable columns={Column} data={project.tasks} />
     </div>
   )
 }
-const PriorityBade = ({priority})=>{
-  if(priority=="High"){
+const AddTaskField = ({ workspace, setworkspace, project, setopenaddtaskfield }) => {
+  const [task, settaks] = useState(null)
+  const handleAddingtask = async () => {
+    if (!task) {
+      toast.error('Task cannot be empty', { position: 'top-right' })
+      return
+    }
+    try {
+      const data = await AddTask(task, project._id, localStorage.getItem('token'))
+      const updatedproject = { ...project, tasks: project.tasks.concat(data.newTask) }
+      const updatedworkspace = {
+        ...workspace, projects: workspace.projects.map((proj) => {
+          if (proj._id == project._id) {
+            return updatedproject
+          }
+          else {
+            return proj
+          }
+        })
+      }
+      setworkspace(updatedworkspace) 
+      settaks(null)
+      toast.success('Task added successfully', { position: 'top-right' })
+      console.log(task);
+    } catch (error) {
+      const errormessage = error.response.data.message
+      toast.error('Failed to add task: ' + errormessage, { position: 'top-right' })
+    }
+  }
+  return (
+    <div className="flex w-100 gap-2 items-center">
+      <Input placeholder="Enter task" onChange={(e) => { settaks(e.target.value) }} value={task ? task : ""} />
+      <Button className='' variant="outline" onClick={handleAddingtask}>Add</Button>
+      <Button className='bg-red-50 text-red-700 hover:bg-red-100' onClick={() => { setopenaddtaskfield(false) }}><PlusIcon className=" rotate-45 scale-150" /></Button>
+
+    </div>
+  )
+}
+const PriorityBadge = ({ priority }) => {
+  if (priority == "High") {
     return <Badge className="bg-red-50 text-red-700">{priority} priority</Badge>
   }
-  else if(priority=="Mid"){
+  else if (priority == "Mid") {
     return <Badge className="bg-yellow-50 text-yellow-700">{priority} priority</Badge>
   }
-  else{
+  else {
     return <Badge className="bg-blue-50 text-blue-700">{priority} priority</Badge>
   }
 }

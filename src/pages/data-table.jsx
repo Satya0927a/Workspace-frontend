@@ -39,14 +39,14 @@ const TaskTable = ({ data, columns }) => {
                 data-state={row.getIsSelected() && "selected"}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell key={cell.id} className='whitespace-normal wrap-break-word'>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
               </TableRow>
             ))
           ) : (
-            <TableRow>
+            <TableRow className='wrap-break-word'>
               <TableCell colSpan={columns.length} className="h-24 text-center">
                 No results.
               </TableCell>

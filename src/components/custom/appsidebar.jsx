@@ -32,9 +32,8 @@ export function AppSidebar({ user, setuser }) {
       <SidebarContent>
         <SidebarGroup>
           <SidebarMenuItem>
-            <SidebarMenuButton>
-              <HomeIcon />
-              Home
+            <SidebarMenuButton asChild>
+              <a href="/app"><HomeIcon/>Home</a>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
@@ -64,7 +63,9 @@ export function AppSidebar({ user, setuser }) {
               <SidebarMenuSub>
                 <SidebarMenuSubItem>
                 {user.workspace.map((workspace) => (
-                  <SidebarMenuSubButton key={workspace._id} className="p-2 hover:bg-gray-200 cursor-pointer">{workspace.workspaceName}</SidebarMenuSubButton>
+                  <SidebarMenuSubButton key={workspace._id} asChild className="p-2 hover:bg-gray-200 cursor-pointer">
+                    <a href={`/app/workspace/${workspace._id}`}>{workspace.workspaceName}</a>
+                  </SidebarMenuSubButton>
                 ))}
                 </SidebarMenuSubItem>
                 </SidebarMenuSub>

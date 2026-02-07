@@ -14,7 +14,7 @@ function App() {
         <Route path="/" element={<Navigate to={'/app'}></Navigate>}></Route>
         <Route path="/login" element={<Loginpage setuser={setuser}/>}></Route>
         <Route path='/app' element={<ProtectedPage user={user} setuser={setuser}><AppPage user={user} setuser={setuser}/></ProtectedPage>}></Route>
-        <Route path='/app/workspace/:workspaceId' element={<WorkspacePage/>}></Route>
+        <Route path='/app/workspace/:workspaceId' element={<ProtectedPage user={user} setuser={setuser}><WorkspacePage user={user} setuser={setuser}/></ProtectedPage>}></Route>
       </Routes>
     </BrowserRouter>
   )

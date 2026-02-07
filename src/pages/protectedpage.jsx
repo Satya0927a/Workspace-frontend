@@ -1,5 +1,6 @@
 import axios from "axios"
 import { Navigate ,useNavigate} from "react-router"
+import { toast } from "sonner"
 
 const ProtectedPage = ({user,setuser,children})=>{
   const navigate = useNavigate()
@@ -19,6 +20,7 @@ const ProtectedPage = ({user,setuser,children})=>{
             <Navigate to='/app'></Navigate>
           )
         } catch (error) {
+          toast.error(error.response.data.message,{position:'top-right'})
           console.log(error.response.data);
           navigate('/login')
         }

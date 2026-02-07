@@ -10,5 +10,25 @@ const createWorkspace = async (workspaceName, token) => {
     })
     return result.data
 }
-
-export default createWorkspace
+const fetchWorkspace = async(workspaceId,token)=>{
+  const result = await axios.get(`/api/workspace/fetch/${workspaceId}`,{
+    headers:{
+      Authorization:`Bearer ${token}`
+    }
+  })
+  return result.data
+}
+const createProject = async(projectName,Description,Priority,workspaceId,token)=>{
+  const result = await axios.post('/api/workspace/project/create',{
+    project:projectName,
+    description:Description,
+    priority:Priority,
+    workspaceId:workspaceId
+  },{
+    headers:{
+      Authorization:`Bearer ${token}`
+    }
+  })
+  return result.data
+}
+export {createWorkspace,fetchWorkspace,createProject}

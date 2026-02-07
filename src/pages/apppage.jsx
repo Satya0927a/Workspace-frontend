@@ -9,7 +9,7 @@ import { ScrollBar, ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import {  SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
-import createWorkspace from "@/services/user";
+import {createWorkspace} from "@/services/user";
 import timeAgo from "@/utils/timeago";
 import {  FileInputIcon,  FileTextIcon, PlusIcon } from "lucide-react";
 import { useState } from "react";
